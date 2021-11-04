@@ -3,7 +3,7 @@
         <view class="item">
             <image class="logo" src="/static/jr.png"/>
         </view>
-        <view class="item">
+        <view class="item swiper-box">
             <view class="uni-padding-wrap">
                 <view class="page-section swiper">
                     <view class="page-section-spacing">
@@ -29,7 +29,7 @@
         </view>
         <view class="item">
             <div class="time">
-                {{today}}
+                <router-link to="/pages/index/pickView">{{today}}</router-link>
             </div>
         </view>
         <view class="item list">
@@ -49,6 +49,9 @@
     </view>
 </template>
 <script>
+    import axios from 'axios'
+    import {getXuanJIang} from "../../api";
+
     export default {
         data() {
             return {
@@ -114,21 +117,29 @@
                 }
                 let wstr="";
                  let day=date.getDay();
-                    if (day==0){wstr="星期日";} 
-                    else if(day==1){wstr="星期一";} 
+                    if (day==0){wstr="星期日";}
+                    else if(day==1){wstr="星期一";}
                     else if(day==2){wstr="星期二";}
-                    else if(day==3){wstr="星期三";} 
-                    else if(day==4){wstr="星期四";} 
-                    else if(day==5){wstr="星期五";} 
-                    else if(day==6){wstr="星期六";} 
-                
+                    else if(day==3){wstr="星期三";}
+                    else if(day==4){wstr="星期四";}
+                    else if(day==5){wstr="星期五";}
+                    else if(day==6){wstr="星期六";}
+
                 let currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
                     + " " +wstr;
                 return currentdate;
             }
         },
         created(){
-            
+            getXuanJIang().then(res=>{
+                if(res.status===200){
+                    console.log(res)
+                }else{
+
+                }
+
+            })
+
         },
         methods: {}
     }
@@ -146,6 +157,11 @@
         height: 88upx;
         width: 534upx;
         margin-top: 0;
+    }
+    .swiper-box{
+        width: 750upx;
+        height: 90.625upx;
+        overflow: hidden;
     }
 
     .swiper-img {
