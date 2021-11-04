@@ -1,0 +1,25 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+}
+
+.logo {
+    height: 88 upx;
+    width: 534 upx;
+    margin-top: 0;
+}
+
+.swiper-img {
+    width: 750 upx;
+    height: 90.625 upx;
+}
+
+.item:nth-child(2) {
+    height: 90.625 upx;
+}
+
+.time {
+    text-align: center;
+}
