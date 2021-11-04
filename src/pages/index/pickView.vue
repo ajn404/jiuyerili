@@ -1,24 +1,25 @@
 <template>
     <view>
-        <page-head :title="title"></page-head>
-<!--        <view class="uni-padding-wrap">-->
-<!--            <view class="uni-title">-->
-<!--                日期：{{year}}年{{month}}月{{day}}日-->
-<!--            </view>-->
-<!--        </view>-->
-        <picker-view v-if="visible" :indicator-style="indicatorStyle" :mask-style="maskStyle" :value="value" @change="bindChange">
+        <!--        <page-head :title="title"></page-head>-->
+        <!--        <view class="uni-padding-wrap">-->
+        <!--            <view class="uni-title">-->
+        <!--                日期：{{year}}年{{month}}月{{day}}日-->
+        <!--            </view>-->
+        <!--        </view>-->
+        <picker-view :indicator-style="indicatorStyle" :mask-style="maskStyle" :value="value" @change="bindChange"
+                     v-if="visible">
             <picker-view-column>
-                <view class="item" v-for="(item,index) in years" :key="index">{{item}}年</view>
+                <view :key="index" class="item" v-for="(item,index) in years">{{item}}年</view>
             </picker-view-column>
             <picker-view-column>
-                <view class="item" v-for="(item,index) in months" :key="index">{{item}}月</view>
+                <view :key="index" class="item" v-for="(item,index) in months">{{item}}月</view>
             </picker-view-column>
             <picker-view-column>
-                <view class="item" v-for="(item,index) in days" :key="index">{{item}}日</view>
+                <view :key="index" class="item" v-for="(item,index) in days">{{item}}日</view>
             </picker-view-column>
         </picker-view>
         <view>
-            <button class="sure">确定</button>
+            <button @click="sure" class="sure">确定</button>
         </view>
 
     </view>
@@ -26,7 +27,7 @@
 
 <script>
     export default {
-        data () {
+        data() {
             const date = new Date()
             const years = []
             const year = date.getFullYear()
@@ -66,11 +67,14 @@
             }
         },
         methods: {
-            bindChange (e) {
+            bindChange(e) {
                 const val = e.detail.value
                 this.year = this.years[val[0]]
                 this.month = this.months[val[1]]
                 this.day = this.days[val[2]]
+            },
+            sure() {
+                console.log(this.year, this.month, this.day)
             }
         }
     }
@@ -80,15 +84,16 @@
 
     picker-view {
         width: 100%;
-        height: 600rpx;
-        margin-top:20rpx;
+        height: 600 rpx;
+        margin-top: 20 rpx;
     }
 
     .item {
-        line-height: 100rpx;
+        line-height: 100 rpx;
         text-align: center;
     }
-    .sure{
-        margin-top: 100upx;
+
+    .sure {
+        margin-top: 100 upx;
     }
 </style>
