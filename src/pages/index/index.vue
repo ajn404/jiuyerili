@@ -1,5 +1,5 @@
 <template>
-    <view class="content">
+    <view class="home content">
         <view class="item">
             <image class="logo" src="/static/jr.png"/>
         </view>
@@ -29,29 +29,39 @@
         </view>
         <view class="item">
             <div class="time">
-                <router-link to="/pages/index/pickView">今日({{today}})</router-link>
+                <span @click="show">{{selectedDay}}</span>>
             </div>
         </view>
-
-        <tui-card :tag="card.tag" :title="card.title">
+        <tui-date-time ref="dateTime" @confirm="change" :type="2" ></tui-date-time>
+        <view class="item">
+        <view v-for="item in CampusRecruList.slice(0,10)" class="card-item" >
+               <tui-card
+                       :tag="{text:item.ScheduleDateS+'-'+item.ScheduleDateE}"
+                       :title="{text:'宣讲会'}"
+               >
             <template v-slot:body>
                 <view class="tui-default">
-                    默认卡片内容部分 slot=>body
+                        <p>招聘单位:{{item.EntName}}</p>
+                        <p>宣讲会地点:{{item.HostVenue}}</p>
                 </view>
             </template>
             <template v-slot:footer>
                 <view class="tui-default">
-                    默认卡片底部 slot=>footer
                 </view>
             </template>
         </tui-card>
+        </view>
+        </view>
+
+
     </view>
 </template>
 <script>
-    import {getXuanJIang} from "../../api";
+    import {getCampusRecruList, getMeetTable} from "../../api";
     import tuiCard from 'thorui-uni/lib/thorui/tui-card/tui-card'
+    import tuiDateTime from 'thorui-uni/lib/thorui/tui-datetime/tui-datetime'
+    import tuiCalendar from "thorui-uni/lib/thorui/tui-calendar/tui-calendar"
     import moment from 'moment'
-
     export default {
         data() {
             return {
@@ -61,6 +71,12 @@
                 parsedData: [],
                 data: [],
                 limit: 10,
+                today:'',
+                selectedDay:'',
+                //宣讲会
+                CampusRecruList:[],
+                //招聘会
+                meetTable:[],
                 card: {
                     title: {
                         text: 'CSDN云计算'
@@ -77,20 +93,27 @@
             }
         },
 
-        computed: {
-            today() {
-                let date = new Date();
-                let seperator1 = "-";
-                let month = date.getMonth() + 1;
-                let strDate = date.getDate();
-                if (month >= 1 && month <= 9) {
-                    month = "0" + month;
+        created() {
+            getCampusRecruList().then(res => {
+                if (res.status === 200) {
+                    this.CampusRecruList = res.data.Data;
+                } else {
                 }
-                if (strDate >= 0 && strDate <= 9) {
-                    strDate = "0" + strDate;
+            })
+            getMeetTable().then(res=>{
+                if (res.status === 200) {
+                    this.meetTable = res.data.Data;
+                } else {
                 }
-                let wstr = "";
-                let day = date.getDay();
+            })
+            let date = new Date();
+            this.initDate(date);
+        },
+        methods: {
+            //初始化选择时间为今日
+            initDate(date){
+                let day = moment(date).weekday();
+                let wstr=''
                 if (day == 0) {
                     wstr = "星期日";
                 } else if (day == 1) {
@@ -104,39 +127,35 @@
                 } else if (day == 5) {
                     wstr = "星期五";
                 } else if (day == 6) {
-                    wstr = "星期六";
-                }
+                    wstr = "星期六";}
+                let currentdate = moment(date).year() +"-"+(moment(date).month()+1)+"-"+moment(date).date() + " " + wstr;
+                this.selectedDay = currentdate
+            },
 
-                let currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
-                    + " " + wstr;
-                return currentdate;
+            //显示时间选择
+            show: function(e) {
+                this.$refs.dateTime.show();
+            },
+            change: function(e) {
+                this.selectedDay = e.result;
+                this.initDate(e.result)
             }
         },
-        created() {
-            getXuanJIang().then(res => {
-                if (res.status === 200) {
-                    this.data = res.data.Data;
-                } else {
-                }
-            })
-
-
-            console.log(moment("2021-11-4").year());
-            console.log(moment("2021-11-4").month()+1);
-            console.log(moment("2021-11-4").date());
-
-
-        },
-        methods: {},
         components: {
-            tuiCard
+            tuiCard,
+            tuiDateTime,
+            tuiCalendar
         }
     }
 </script>
 
 <style scoped>
-    .content {
-        display: flex;
+    .card-item{
+        margin-bottom: 20upx;
+    }
+
+    .home.content {
+        /*display: flex;*/
         flex-direction: column;
         justify-content: center;
         align-content: center;
@@ -179,7 +198,7 @@
         padding-left: 50upx;
     }
 
-    ::v-deep .time a {
+    ::v-deep .time span {
         font-size: 1em;
         color: #007aff;
         text-decoration: none;

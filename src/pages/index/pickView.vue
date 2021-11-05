@@ -84,16 +84,16 @@
 
     picker-view {
         width: 100%;
-        height: 600 rpx;
-        margin-top: 20 rpx;
+        height: 600rpx;
+        margin-top: 20rpx;
     }
 
     .item {
-        line-height: 100 rpx;
+        line-height: 100rpx;
         text-align: center;
     }
 
     .sure {
-        margin-top: 100 upx;
+        margin-top: 100upx;
     }
 </style>
