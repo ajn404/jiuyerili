@@ -41,19 +41,49 @@
                >
             <template v-slot:body>
                 <view class="tui-default">
-                        <p>招聘单位:{{item.EntName}}</p>
-                        <p>宣讲会地点:{{item.HostVenue}}</p>
+                        <p class="zhao-pin-dan-wei">招聘单位:{{item.EntName}}</p>
+                        <p class="xuanjianghuididian">宣讲会地点:{{item.HostVenue}}</p>
                 </view>
             </template>
             <template v-slot:footer>
                 <view class="tui-default">
+                    <footer class="footer">
+                        <span @click="showToast">添加到日程</span>
+                        <span @click="showToast">详情</span>
+                    </footer>
                 </view>
             </template>
         </tui-card>
         </view>
         </view>
 
+        <view class="item">
+            <view v-for="item in meetTable.slice(0,10)" class="card-item" >
+                <tui-card
+                        :tag="{text:item.MeetStart+'-'+item.MeetEnd}"
+                        :title="{text:'招聘会'}"
+                >
+                    <template v-slot:body>
+                        <view class="tui-default">
+                            <p >{{item.MeetName}}</p>
+                            <p >地点:{{item.MeetAddress}}</p>
+                        </view>
+                    </template>
+                    <template v-slot:footer>
+                        <view class="tui-default">
+                            <footer class="footer">
+                                <span @click="showToast">详情</span>
+                                <span @click="showToast">添加到日程</span>
+                            </footer>
+                        </view>
+                    </template>
+                </tui-card>
+            </view>
+        </view>
 
+
+
+        <tui-toast ref="toast"></tui-toast>
     </view>
 </template>
 <script>
@@ -61,6 +91,7 @@
     import tuiCard from 'thorui-uni/lib/thorui/tui-card/tui-card'
     import tuiDateTime from 'thorui-uni/lib/thorui/tui-datetime/tui-datetime'
     import tuiCalendar from "thorui-uni/lib/thorui/tui-calendar/tui-calendar"
+    import tuiToast from "thorui-uni/lib/thorui/tui-toast/tui-toast"
     import moment from 'moment'
     export default {
         data() {
@@ -77,14 +108,15 @@
                 CampusRecruList:[],
                 //招聘会
                 meetTable:[],
-                card: {
-                    title: {
-                        text: 'CSDN云计算'
-                    },
-                    tag: {
-                        text: '1小时前'
-                    },
-                },
+            // {
+            //     FabuFlag: "是"
+            //     MeetAddress: "上海理工大学学生体育活动中心（军工路580号）"
+            //     MeetEnd: "2018/3/28 16:30:00"
+            //     MeetID: 14
+            //     MeetName: "上海理工大学2018届毕业生春季招聘会"
+            //     MeetStart: "2018/3/28 13:30:00"
+            // }
+
             }
         },
         watch: {
@@ -101,8 +133,10 @@
                 }
             })
             getMeetTable().then(res=>{
+                console.log("1",res)
                 if (res.status === 200) {
                     this.meetTable = res.data.Data;
+                    console.log(res)
                 } else {
                 }
             })
@@ -139,17 +173,34 @@
             change: function(e) {
                 this.selectedDay = e.result;
                 this.initDate(e.result)
+            },
+
+            showToast: function(e) {
+                let params = {
+                    title: "暂未实现",
+                }
+                this.$refs.toast.show(params);
             }
         },
         components: {
             tuiCard,
             tuiDateTime,
-            tuiCalendar
+            tuiCalendar,
+            tuiToast
         }
     }
 </script>
 
 <style scoped>
+    .footer span{
+        margin-right: 20upx;
+    }
+    .tui-default{
+        padding: .8em;
+    }
+    .tui-default p{
+        font-size: .8em;
+    }
     .card-item{
         margin-bottom: 20upx;
     }
