@@ -57,7 +57,7 @@
         <view class="item">
         <view v-for="(item,index) in CampusRecruList.slice(0,10)" class="card-item" :key="index">
                <tui-card
-                       :tag="{text:item.ScheduledDateS+'-'+item.ScheduledDateE}"
+                       :tag="{text:moment(item.ScheduledDate).format('YYYY-MM-DD')+' ' +item.ScheduledDateS+'-'+item.ScheduledDateE}"
                        :title="{text:'宣讲会'}"
                >
             <template v-slot:body>
@@ -81,7 +81,7 @@
         <view class="item">
             <view v-for="(item,index) in meetTable" class="card-item" :key="index">
                 <tui-card
-                        :tag="{text:moment(item.MeetStart).format('h:mm')+'-'+moment(item.MeetEnd).format('h:mm')}"
+                        :tag="{text:moment(item.MeetStart).format('YYYY-MM-DD h:mm')+'-'+moment(item.MeetEnd).format('YYYY-MM-DD h:mm')}"
                         :title="{text:'招聘会'}"
                 >
                     <template v-slot:body>
