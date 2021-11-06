@@ -28,15 +28,36 @@
             </view>
         </view>
         <view class="item">
-            <div class="time">
-                <span @click="show">{{selectedDay}}</span>>
+            <div class="time" style="display: flex">
+
+                <tui-button 
+                type="gray-primary"
+                 @click="showStart"
+                 width="375upx"
+                 height="84upx">
+                    <tui-icon name="calendar" class="calendar-icon"></tui-icon>
+                    {{selectedStartDay}}
+                 </tui-button>
+                <div class="arrow">
+                    <tui-icon name="arrowright" ></tui-icon>
+                </div>
+                <tui-button
+                        type="gray-primary"
+                        @click="show"
+                        width="375upx"
+                        height="84upx">
+                    <tui-icon name="calendar" class="calendar-icon"></tui-icon>
+                    {{selectedEndDay}}
+                </tui-button>
+
+
             </div>
         </view>
         <tui-date-time ref="dateTime" @confirm="change" :type="2" ></tui-date-time>
         <view class="item">
-        <view v-for="item in CampusRecruList.slice(0,10)" class="card-item" >
+        <view v-for="(item,index) in CampusRecruList.slice(0,10)" class="card-item" :key="index">
                <tui-card
-                       :tag="{text:item.ScheduleDateS+'-'+item.ScheduleDateE}"
+                       :tag="{text:item.ScheduledDateS+'-'+item.ScheduledDateE}"
                        :title="{text:'宣讲会'}"
                >
             <template v-slot:body>
@@ -48,8 +69,8 @@
             <template v-slot:footer>
                 <view class="tui-default">
                     <footer class="footer">
-                        <span @click="showToast">添加到日程</span>
-                        <span @click="showToast">详情</span>
+                        <span @click="showFail">添加到日程</span>
+                        <span @click="showFail">详情</span>
                     </footer>
                 </view>
             </template>
@@ -58,9 +79,9 @@
         </view>
 
         <view class="item">
-            <view v-for="item in meetTable.slice(0,10)" class="card-item" >
+            <view v-for="(item,index) in meetTable" class="card-item" :key="index">
                 <tui-card
-                        :tag="{text:item.MeetStart+'-'+item.MeetEnd}"
+                        :tag="{text:moment(item.MeetStart).format('h:mm')+'-'+moment(item.MeetEnd).format('h:mm')}"
                         :title="{text:'招聘会'}"
                 >
                     <template v-slot:body>
@@ -72,8 +93,8 @@
                     <template v-slot:footer>
                         <view class="tui-default">
                             <footer class="footer">
-                                <span @click="showToast">详情</span>
-                                <span @click="showToast">添加到日程</span>
+                                <span @click="showFail">详情</span>
+                                <span @click="showFail">添加到日程</span>
                             </footer>
                         </view>
                     </template>
@@ -92,6 +113,8 @@
     import tuiDateTime from 'thorui-uni/lib/thorui/tui-datetime/tui-datetime'
     import tuiCalendar from "thorui-uni/lib/thorui/tui-calendar/tui-calendar"
     import tuiToast from "thorui-uni/lib/thorui/tui-toast/tui-toast"
+    import tuiButton from "thorui-uni/lib/thorui/tui-button/tui-button"
+    import tuiIcon from "thorui-uni/lib/thorui/tui-icon/tui-icon.vue"
     import moment from 'moment'
     export default {
         data() {
@@ -101,22 +124,16 @@
                 duration: 500,
                 parsedData: [],
                 data: [],
+                moment,
                 limit: 10,
                 today:'',
-                selectedDay:'',
+                isStartDay:false,
+                selectedStartDay:'',
+                selectedEndDay:'',
                 //宣讲会
                 CampusRecruList:[],
                 //招聘会
                 meetTable:[],
-            // {
-            //     FabuFlag: "是"
-            //     MeetAddress: "上海理工大学学生体育活动中心（军工路580号）"
-            //     MeetEnd: "2018/3/28 16:30:00"
-            //     MeetID: 14
-            //     MeetName: "上海理工大学2018届毕业生春季招聘会"
-            //     MeetStart: "2018/3/28 13:30:00"
-            // }
-
             }
         },
         watch: {
@@ -126,58 +143,87 @@
         },
 
         created() {
-            getCampusRecruList().then(res => {
-                if (res.status === 200) {
-                    this.CampusRecruList = res.data.Data;
-                } else {
-                }
-            })
-            getMeetTable().then(res=>{
-                console.log("1",res)
-                if (res.status === 200) {
-                    this.meetTable = res.data.Data;
-                    console.log(res)
-                } else {
-                }
-            })
             let date = new Date();
-            this.initDate(date);
+            this.initDate(date,'all');
+            // 初始化使用当日时间
+            this.parseData(date)
         },
         methods: {
             //初始化选择时间为今日
-            initDate(date){
-                let day = moment(date).weekday();
-                let wstr=''
-                if (day == 0) {
-                    wstr = "星期日";
-                } else if (day == 1) {
-                    wstr = "星期一";
-                } else if (day == 2) {
-                    wstr = "星期二";
-                } else if (day == 3) {
-                    wstr = "星期三";
-                } else if (day == 4) {
-                    wstr = "星期四";
-                } else if (day == 5) {
-                    wstr = "星期五";
-                } else if (day == 6) {
-                    wstr = "星期六";}
-                let currentdate = moment(date).year() +"-"+(moment(date).month()+1)+"-"+moment(date).date() + " " + wstr;
-                this.selectedDay = currentdate
+            initDate(date,type){
+                let currentdate = moment(date).year() +"-"+(moment(date).month()+1)+"-"+moment(date).date();
+                if(type==='all'){
+                    this.selectedStartDay = currentdate;
+                    this.selectedEndDay =currentdate
+                }else if(type)
+                this.selectedStartDay = currentdate;
+                else this.selectedEndDay =currentdate
+            },
+
+            parseData(date,type){
+
+                let date_start,date_end;
+                if(type){
+                    date_start = moment(date).format("YYYY-MM-DD")
+                    date_end =moment(this.selectedEndDay).format("YYYY-MM-DD");
+                }
+
+                else{
+                    date_end = moment(date).format("YYYY-MM-DD")
+                    date_start =moment(this.selectedStartDay).format("YYYY-MM-DD");
+                }
+                var params = new URLSearchParams();
+                params.append('date_start',date_start);
+                params.append('date_end',date_end)
+                getCampusRecruList(params).then(res => {
+                    if (res.status === 200) {
+                        this.CampusRecruList = res.data.result.data;
+                        this.showSuccess()
+                    } else {
+                    }
+                })
+                getMeetTable(params).then(res=>{
+                    if (res) {
+                        this.meetTable = res.data.result.data;
+                        this.showSuccess()
+                    } else {
+                    }
+                })
             },
 
             //显示时间选择
             show: function(e) {
                 this.$refs.dateTime.show();
             },
-            change: function(e) {
-                this.selectedDay = e.result;
-                this.initDate(e.result)
+            showStart(){
+                this.$refs.dateTime.show();
+                this.isStartDay = true;
             },
 
-            showToast: function(e) {
+            change: function(e) {
+                if(this.isStartDay){
+                    this.selectedStartDay = e.result;
+                    this.initDate(e.result,true);
+                    this.parseData(e.result,true);
+                    this.isStartDay = false;
+                }else{
+                    this.selectedEndDay = e.result;
+                    this.initDate(e.result,false);
+                    this.parseData(e.result,false);
+                }
+
+
+            },
+
+            showFail: function(e) {
                 let params = {
                     title: "暂未实现",
+                }
+                this.$refs.toast.show(params);
+            },
+            showSuccess: function(e) {
+                let params = {
+                    title: "获取成功",
                 }
                 this.$refs.toast.show(params);
             }
@@ -186,7 +232,9 @@
             tuiCard,
             tuiDateTime,
             tuiCalendar,
-            tuiToast
+            tuiToast,
+            tuiButton,
+            tuiIcon
         }
     }
 </script>
@@ -289,5 +337,20 @@
         text-align: center;
     }
 
+    .calendar-icon{
+        font-size: 1em!important;
+    }
+    .arrow{
+        width: 50upx;
+        height: 84upx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 100%;
+        background: #f2f2f2 !important;
+    }
+    ::v-deep  .arrow .tui-icon{
+        font-size: 1em!important;
+    }
 
 </style>

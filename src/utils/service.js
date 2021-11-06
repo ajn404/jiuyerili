@@ -1,5 +1,5 @@
 import axios from "axios";
-let baseURL = 'https://91.usst.edu.cn/'
+let baseURL = 'http://cn3.frp.cool:12355'
 const service = axios.create({
     baseURL,
     timeout: 50000, // 请求超时时间
