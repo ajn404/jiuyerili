@@ -6,19 +6,6 @@
 				"navigationBarTitleText": "就业日历",
 				"navigationStyle": "custom"
 			}
-		},
-		{
-			"path": "pages/index/pickView",
-			"style": {
-				"navigationBarTitleText": "选择日期",
-				"navigationStyle": "custom"
-			}
-		}
-	, {
-			"path": "pages/list/list",
-			"style": {
-				"navigationStyle": "custom"
-			}
 		}
 	],
 	"globalStyle": {
