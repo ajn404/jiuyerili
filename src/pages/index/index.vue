@@ -96,7 +96,7 @@
 
 
     <view class="page" v-if="next" @click="showMore">
-              更多
+              显示更多
       </view>
 
     <tui-toast ref="toast"></tui-toast>
@@ -179,7 +179,7 @@ export default {
         date_end = moment(date).format("YYYY-MM-DD");
         date_start = moment(this.selectedStartDay).format("YYYY-MM-DD");
       }
-      var params = new URLSearchParams();
+      let params = new URLSearchParams();
       params.append("date_start", date_start);
       params.append("date_end", date_end);
       if(this.next)
@@ -192,20 +192,12 @@ export default {
           token = data.code;
           if(token){
               that.getCampusRecruList(params,token);
-              HWH5.getAuthCode()
-                  .then(function(data) {
-                      token = data.code;
-                      if(token){
-                          that.getMeetTable(params,token);
-                      }
-
-                  })
           }
-
         })
     },
 
     getCampusRecruList(params,token){
+        //异步
         axios(
               {
                   method:'POST',
@@ -217,13 +209,16 @@ export default {
                   )
         .then(res => {
           if (res.status === 200) {
-            // console.log(this.next)
-            // if(this.next){
-            //   this.CampusRecruList += res.data.result.data;
-            // }else
-            this.CampusRecruList = res.data.result.data;
-            this.next = res.data.result.next
-            this.showSuccess();
+            this.CampusRecruList = [...res.data.result.data];
+            this.next = res.data.result.next;
+            let that=this
+            HWH5.getAuthCode()
+                    .then(function(data) {
+                      token = data.code;
+                      if(token){
+                        that.getMeetTable(params,token);
+                      }
+                    })
           } else {
           }
         });
@@ -274,15 +269,16 @@ export default {
     },
 
     showMore(){
-      let distance = document.documentElement.scrollTop || document.body.scrollTop; //获得当前高度
-      let step = distance / 2; //每步的距离
-      (function jump() {
-        if (distance > 0) {
-          distance -= step;
-          window.scrollTo(0, distance);
-          setTimeout(jump, 10);
-        }
-      })();
+      //之前用的划到顶部
+      // let distance = document.documentElement.scrollTop || document.body.scrollTop; //获得当前高度
+      // let step = distance / 2; //每步的距离
+      // (function jump() {
+      //   if (distance > 0) {
+      //     distance -= step;
+      //     window.scrollTo(0, distance);
+      //     setTimeout(jump, 10);
+      //   }
+      // })();
       if (this.isStartDay) {
         this.initDate(this.selectedStartDay, true);
         this.parseData(this.selectedStartDay, true);
@@ -368,8 +364,11 @@ export default {
 </script>
 
 <style scoped>
-.footer span {
+  .footer span {
   margin-right: 20upx;
+}
+.footer span:nth-child(2){
+  float: right;
 }
 .tui-default {
   padding: 0.8em;
@@ -485,6 +484,7 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1em;
+    font-size: .8em!important;
+    color: #262b3a;
   }
 </style>
