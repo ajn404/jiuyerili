@@ -55,7 +55,7 @@
         >
           <p class="indicator-title">
             <tui-icon name="calendar" class="calendar-icon"></tui-icon>
-            {{selectedStartDay}}
+            {{selectedStartDay}}星期{{moment(selectedStartDay).weekday() | getWeek }}
           </p>
           <p class="indicator-txt">{{todayCount}}</p>
         </tui-button>
@@ -267,6 +267,12 @@ export default {
   },
   onReachBottom() {
     if (this.hasMore > 0) this.loadData();
+  },
+  filters:{
+    getWeek(e){
+      var week = ['一', '二', '三', '四', '五', '六', '日']
+      return week[e - 1]
+    }
   },
   methods: {
     async init() {
