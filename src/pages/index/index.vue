@@ -639,4 +639,7 @@ export default {
   font-size: smaller;
   color: #838383;
 }
+::v-deep .tui-header-title{
+  max-width: 660upx;
+}
 </style>
